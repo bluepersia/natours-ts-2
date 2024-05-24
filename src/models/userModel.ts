@@ -11,7 +11,8 @@ export interface IUser
     role:string,
     password:string | undefined,
     passwordConfirm: string | undefined,
-    passwordChangedAt:Date   
+    passwordChangedAt:Date,
+    comparePassword: (s:string, hash:string) => Promise<boolean>
 }
 
 
@@ -53,7 +54,8 @@ const userSchema = new Schema<IUser> ({
     password: {
         type:String,
         required:[true, 'Please provide a password'],
-        minlength:8
+        minlength:8,
+        select:false
     },
     passwordConfirm: {
         type:String,
@@ -90,6 +92,11 @@ userSchema.pre ('save', async function (next) : Promise<void>
     this.passwordConfirm = undefined;
 });
 
+
+userSchema.methods.comparePassword = async function (s:string, hash:string) : Promise<boolean>
+{
+    return await bcrypt.compare (s, hash);
+}
 
 const User = model ('User', userSchema);
 
