@@ -1,10 +1,13 @@
 import express from 'express';
+import cookies from 'cookie-parser';
 import tourRouter from './routes/tourRoutes';
 import userRouter from './routes/userRoutes';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './util/AppError';
 
 const app = express ();
+
+app.use (cookies ());
 
 app.use (express.json({limit:'10kb'}));
 
