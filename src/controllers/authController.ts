@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { HydratedDocument } from "mongoose";
 import AppError from "../util/AppError";
 const util = require ('util');
+import Email from "../util/Email";
 
 function sign (id:string) : string 
 {
@@ -38,6 +39,8 @@ export const signup = handle (async (req:Request, res:Response) : Promise<void> 
     const {name, email, password, passwordConfirm} = req.body;
 
     const user = await User.create ({name, email, password, passwordConfirm});
+
+    new Email (user.email, {firstName:user.name.split(' ')[0]}).sendWelcome ();
 
     signAndSend (user, res, 201);
 });
@@ -103,3 +106,31 @@ export const restrictTo = function (...roles:string[])
         next ();
     }
 }
+
+
+export const forgotPassword = handle (async(req:Request, res:Response) : Promise<void> =>
+{
+    const user = await User.findOne ({email: req.body.email});
+
+    if (!user)
+        throw new AppError ('No user with that ID', 404);
+
+    const token = user.createPasswordResetToken ();
+    await user.save ({validateBeforeSave:false});
+
+    const resetUrl =`${process.env.HOME_URL}/reset-password?token=${token}`;;
+
+    try 
+    {
+        await new Email (user.email, {firstName:user.name.split(' ')[0], url:resetUrl});
+    }
+    catch 
+    {
+        throw new AppError ('Something went wrong sending email. Please try again later.', 500);
+    }
+
+    res.status (200).json ({
+        status: 'success',
+        message: 'Token was sent!' 
+    })
+});
