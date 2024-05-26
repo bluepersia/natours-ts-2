@@ -8,7 +8,14 @@ import { IRequest } from './authController';
 
 export const getAll = (Model:Model<any>) => handle (async (req:Request, res:Response) : Promise<void> =>
 {
-    const query = Model.find ();
+    const filter:{[key:string]:any} = {};
+
+    if (req.params.userId)
+        filter.user = req.params.userId;
+    if (req.params.tourId)
+        filter.tour = req.params.tourId;
+
+    const query = Model.find (filter);
     new APIFeatures (req.query, query).all ();
     const docs = await query;
 
@@ -24,6 +31,11 @@ export const getAll = (Model:Model<any>) => handle (async (req:Request, res:Resp
 
 export const create = (Model:Model<any>) => handle (async (req:Request, res:Response) : Promise<void> =>
 {
+    if (req.params.userId)
+        req.body.user = req.params.userId;
+    if (req.params.tourId)
+        req.body.tour = req.params.tourId;
+
     const doc = await Model.create (req.body);
 
     res.status (201).json ({

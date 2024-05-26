@@ -1,9 +1,12 @@
 import express from 'express';
 const router = express.Router ();
+import reviewRouter from './reviewRoutes';
 import authController = require ('../controllers/authController');
 import userController = require ('../controllers/userController');
 import multer from 'multer';
 const upload = multer ();
+
+router.use ('/:userId/reviews', reviewRouter);
 
 router.post ('/sign-up', upload.none (), authController.signup);
 router.post ('/log-in', upload.none (), authController.login);
