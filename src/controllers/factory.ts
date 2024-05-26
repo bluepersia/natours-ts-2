@@ -3,6 +3,7 @@ import handle from 'express-async-handler';
 import { Model } from 'mongoose';
 import APIFeatures from '../util/APIFeatures';
 import AppError from '../util/AppError';
+import { IRequest } from './authController';
 
 
 export const getAll = (Model:Model<any>) => handle (async (req:Request, res:Response) : Promise<void> =>
@@ -76,3 +77,30 @@ export const updateOne = (Model:Model<any>) => handle (async(req:Request, res:Re
                 data: null
             })
         });
+
+
+
+
+export const isMine = (Model:Model<any>) => handle (async (req:Request, res:Response, next:() => void):Promise<void> =>
+{
+    const doc = await Model.findById (req.params.id);
+
+    if (!doc)  
+        throw new AppError ('No document with that ID was found!', 404);
+
+    const id = doc.user.id || doc.user.toString();
+
+    const {user} = req as IRequest;
+
+    if (user.role === 'admin' || user.id === id)
+        return next ();
+
+    throw new AppError ('This resource does not belong to you', 403);
+});
+
+
+export const setMine = function (req:Request, res:Response, next:() => void) : void
+{
+    req.params.userId = (req as IRequest).user.id;
+    next ();
+}
