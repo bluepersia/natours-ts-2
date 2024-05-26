@@ -116,3 +116,12 @@ export const setMine = function (req:Request, res:Response, next:() => void) : v
     req.params.userId = (req as IRequest).user.id;
     next ();
 }
+
+
+export const fileFilter = function (req:Request, file:Express.Multer.File, cb:Function) : void
+{
+    if (file.mimetype.startsWith ('image'))
+        cb (null, true);
+    else
+        cb (new AppError ('Not an image.', 400), false);
+}

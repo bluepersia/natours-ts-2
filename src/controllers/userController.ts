@@ -4,6 +4,8 @@ import handle from 'express-async-handler';
 import { IRequest } from "./authController";
 import factory = require ('./factory');
 import AppError from "../util/AppError";
+import multer from 'multer';
+import sharp from 'sharp';
 
 export const getAllUsers = factory.getAll (User);
 export const createUser = () => { throw new AppError ('Route not defined. Use /signup instead', 400)}
@@ -54,3 +56,25 @@ export const getMe = function (req:Request, res:Response) : void
         }
     })
 }
+
+
+const upload = multer ({
+    storage: multer.memoryStorage (),
+    fileFilter: factory.fileFilter
+})
+
+export const uploadPhoto = upload.single ('photo');
+
+export const processPhoto = handle (async (req:Request, res:Response, next:()=>void):Promise<void> =>
+{
+    if (!req.file)
+        return next ();
+
+    req.body.photo = `user-${(req as IRequest).user.id}-${Date.now()}.jpeg`;
+
+    await sharp (req.file.buffer)
+    .resize (500, 500)
+    .toFormat ("jpeg")
+    .jpeg ({quality:100})
+    .toFile (`public/img/users/${req.body.photo}`);
+});
