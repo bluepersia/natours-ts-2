@@ -10,6 +10,7 @@ export interface IUser
     email:string,
     photo:string,
     role:string,
+    active:boolean,
     password:string | undefined,
     passwordConfirm: string | undefined,
     passwordChangedAt:Date,
@@ -55,6 +56,15 @@ const userSchema = new Schema<IUser> ({
     photo: {
         type:String,
         default: 'default.jpg'
+    },
+    role: {
+        type:String,
+        default: 'user',
+        enum: ['user', 'guide', 'lead-guide', 'admin']
+    },
+    active: {
+        type:Boolean,
+        default:true
     },
     password: {
         type:String,

@@ -56,7 +56,7 @@ export const login = handle (async(req:Request, res:Response) : Promise<void> =>
 
     const user = await User.findOne ({email}).select ('+password');
 
-    if (!user)
+    if (!user || !user.active)
         throw new AppError ('No user with that email', 404);
 
     if (!(await user.comparePassword (password, user.password!)))
@@ -86,7 +86,7 @@ export const protect = handle (async (req:Request, res:Response, next:() => void
 
     const user = await User.findById (decoded.id);
 
-    if (!user)
+    if (!user || !user.active)
         throw new AppError ('User no longer exists', 401);
 
     if (user.hasPasswordChangedSince (new Date (decoded.iat * 1000)))
