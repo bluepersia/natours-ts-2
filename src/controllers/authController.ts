@@ -157,3 +157,22 @@ export const resetPassword = handle(async(req:Request, res:Response) : Promise<v
 
     signAndSend (user, res);
 });
+
+
+
+export const updatePassword = handle (async(req:Request, res:Response):Promise<void> =>
+{
+    const user = await User.findById ((req as IRequest).user.id);
+
+    if (!user)
+        throw new AppError ('Something went wrong finding this user', 404);
+
+    if (!(await user.comparePassword (req.body.passwordCurrent, user.password!)))
+        throw new AppError ('Incorrect password', 401);
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save ();
+
+    signAndSend (user, res);
+});
