@@ -2,8 +2,14 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import handle from 'express-async-handler';
 import { IRequest } from "./authController";
+import factory = require ('./factory');
+import AppError from "../util/AppError";
 
-
+export const getAllUsers = factory.getAll (User);
+export const createUser = () => { throw new AppError ('Route not defined. Use /signup instead', 400)}
+export const getUser = factory.getOne (User);
+export const updateUser = factory.updateOne (User);
+export const deleteUser = factory.deleteOne (User);
 
 export const updateMe = handle (async(req:Request, res:Response):Promise<void> =>
 {
