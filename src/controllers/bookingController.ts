@@ -14,6 +14,23 @@ export const updateBooking = factory.updateOne (Booking);
 export const deleteBooking = factory.deleteOne (Booking);
 
 
+export const getMyBookings = handle (async(req:Request, res:Response):Promise<void> =>
+{
+    const bookings = await Booking.find ({user: (req as IRequest).user.id});
+
+    const tours = await Promise.all (bookings.map (async booking => await Tour.findById(booking.tour)));
+
+    res.status (200).json ({
+        status: 'success',
+        data: {
+            result: tours.length,
+            tours
+        }
+    })
+
+});
+
+
 export const getStripeCheckoutSession = handle (async(req:Request, res:Response):Promise<void> =>
 {
     const tourId = req.params.tourId;
