@@ -3,7 +3,15 @@ import Tour from "../models/tourModel";
 import handle from 'express-async-handler';
 import AppError from "../util/AppError";
 import { IRequest } from "./authController";
+import factory = require ('./factory');
+import Booking from "../models/bookingModel";
 const stripe = require ('stripe')(process.env.STRIPE_SECRET_KEY);
+
+export const getAllBookings = factory.getAll (Booking);
+export const createBooking = factory.create(Booking);
+export const getBooking = factory.getOne (Booking);
+export const updateBooking = factory.updateOne (Booking);
+export const deleteBooking = factory.deleteOne (Booking);
 
 
 export const getStripeCheckoutSession = handle (async(req:Request, res:Response):Promise<void> =>
