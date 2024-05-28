@@ -123,7 +123,7 @@ export const forgotPassword = handle (async(req:Request, res:Response) : Promise
 
     try 
     {
-        await new Email (user.email, {firstName:user.name.split(' ')[0], url:resetUrl});
+        await new Email (user.email, {firstName:user.name.split(' ')[0], url:resetUrl}).sendPasswordReset ();
     }
     catch 
     {
