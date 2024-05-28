@@ -4,6 +4,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 const xss = require ('xss-clean');
 import hpp from 'hpp';
 import compression from 'compression';
+import bookingController = require ('./controllers/bookingController');
 import rateLimit from 'express-rate-limit';
 import cookies from 'cookie-parser';
 import tourRouter from './routes/tourRoutes';
@@ -25,6 +26,8 @@ app.use (compression ());
 app.use (express.static (`./public`, {
     setHeaders: res => res.setHeader ('Cross-Origin-Resource-Policy', 'cross-origin')
 }));
+
+app.post ('/stripe-webhook', express.raw ({type:'application/json'}), bookingController.getStripeCheckoutSession);
 
 app.use (rateLimit ({windowMs: 5000, max:5, message: 'Rate limit exceeded.'}));
 
