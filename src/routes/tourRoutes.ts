@@ -6,7 +6,7 @@ import authController = require ('../controllers/authController');
 
 router.use ('/:tourId/reviews', reviewRouter);
 
-router.route ('/').get (tourController.getAllTours).post (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.createTour);
-router.route ('/:id').get (tourController.getTour).patch (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.updateTour).delete (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.deleteTour);
+router.route ('/').get (tourController.getAllTours).post (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.uploadImages, tourController.processImages, tourController.createTour);
+router.route ('/:id').get (tourController.getTour).patch (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.uploadImages, tourController.processImages, tourController.updateTour).delete (authController.protect, authController.restrictTo('lead-guide', 'admin'), tourController.deleteTour);
 
 export default router;
