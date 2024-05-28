@@ -5,6 +5,8 @@ import authController = require ('../controllers/authController');
 
 router.use (authController.protect);
 
+router.get ('/my-bookings', bookingController.getMyBookings);
+
 router.get ('/stripe-checkout-session/:tourId', bookingController.getStripeCheckoutSession);
 
 router.use (authController.restrictTo('admin', 'lead-guide'));
